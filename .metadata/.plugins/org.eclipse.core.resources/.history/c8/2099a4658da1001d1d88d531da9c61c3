@@ -1,0 +1,12 @@
+package com.rihs.binding;
+
+import java.time.LocalDate;
+
+public class CitizenRegistrationApplicationRequest {
+	private String citizenFullName;
+	private String citizenEmail;
+	private Long citizenMobileNum;
+	private String citizenGender;
+	private LocalDate citizenDob;
+	private Long citizenSsn;
+}

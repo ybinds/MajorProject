@@ -1,0 +1,6 @@
+server.port=8081
+
+spring.application.name=WelcomeApi
+
+spring.boot.admin.client.url=http://localhost:1111
+

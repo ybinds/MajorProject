@@ -1,0 +1,14 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+server:
+  port: 8082
+spring:
+  application:
+    name: UserApi
+  boot:
+    admin:
+      client:
+        url: http://localhost:1111/

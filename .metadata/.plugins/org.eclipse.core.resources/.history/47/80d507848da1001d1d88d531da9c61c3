@@ -1,0 +1,6 @@
+package com.rihs.service;
+
+public interface ICitizenRegistrationApplicationService {
+
+	String registerCitizenApplication();
+}

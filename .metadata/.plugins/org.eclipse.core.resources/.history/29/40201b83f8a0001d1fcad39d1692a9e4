@@ -1,0 +1,8 @@
+package com.rihs.client;
+
+import org.springframework.cloud.openfeign.FeignClient;
+
+@FeignClient
+public interface WelcomeConsumer {
+
+}

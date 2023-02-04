@@ -1,0 +1,20 @@
+package com.rihs.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.rihs.entity.Case;
+import com.rihs.repository.CaseRepository;
+
+public class CaseServiceImpl implements ICaseService {
+
+	@Autowired
+	private CaseRepository crepo;
+	
+	public Integer createCase(Long appId) {
+		Case c = new Case();
+		
+		crepo.save(null);
+		return null;
+	}
+
+}

@@ -1,0 +1,34 @@
+package com.rihs.entity;
+
+import java.time.LocalDate;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name="citizenregistrationapp")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class CitizenRegistrationApplication {
+	
+	private Long citizenAppId;
+	private String citizenFullName;
+	private String citizenEmail;
+	private Long citizenMobileNum;
+	private String citizenGender;
+	private LocalDate citizenDob;
+	private Long citizenSsn;
+	
+	private LocalDate createdDate;
+	
+	private LocalDate updatedDate;
+	
+	private Integer createdBy;
+	private Integer updatedBy;
+	
+}

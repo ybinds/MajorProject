@@ -1,0 +1,5 @@
+package com.rihs.entity;
+
+public class Plan {
+
+}

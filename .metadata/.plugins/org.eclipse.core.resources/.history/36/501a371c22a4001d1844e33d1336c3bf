@@ -1,0 +1,11 @@
+package com.rihs.service;
+
+import com.rihs.binding.CasePlanResponse;
+import com.rihs.binding.IncomeDetailsRequest;
+
+public interface ICaseService {
+
+	CasePlanResponse createCase(Long appId);
+	Long addPlan(Long caseNumber, Integer planId);
+	Long addIncomeDetails(IncomeDetailsRequest request);
+}

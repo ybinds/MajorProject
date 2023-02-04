@@ -1,0 +1,5 @@
+package com.rihs.handler;
+
+public class CitizenRegAppExceptionHandler {
+
+}

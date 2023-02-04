@@ -1,0 +1,16 @@
+package com.rihs.runner;
+
+import org.springframework.boot.CommandLineRunner;
+
+import com.rihs.repository.PlanRepository;
+
+public class AddPlansRunner implements CommandLineRunner{
+
+	@Autowired
+	private PlanRepository repo;
+
+	public void run(String... args) throws Exception {
+		 
+	}
+
+}

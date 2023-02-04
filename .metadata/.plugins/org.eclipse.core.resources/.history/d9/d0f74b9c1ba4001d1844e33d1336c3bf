@@ -1,0 +1,8 @@
+package com.rihs.service;
+
+import com.rihs.binding.CasePlanResponse;
+
+public interface ICaseService {
+
+	CasePlanResponse createCase(Long appId);
+}

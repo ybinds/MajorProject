@@ -1,0 +1,5 @@
+package com.rihs.exception;
+
+public class CaseNotFoundException extends Exception {
+
+}

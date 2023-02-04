@@ -1,0 +1,15 @@
+package com.rihs.service;
+
+import com.rihs.binding.CitizenRegistrationApplicationRequest;
+
+public class CitizenRegistrationApplicationServiceImpl implements ICitizenRegistrationApplicationService {
+
+	@Override
+	public String registerCitizenApplication(CitizenRegistrationApplicationRequest request) {
+		
+		
+		
+		return null;
+	}
+
+}

@@ -1,0 +1,27 @@
+package com.rihs.service;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
+import com.rihs.binding.CitizenRegistrationApplicationRequest;
+
+public class CitizenRegistrationApplicationServiceImpl implements ICitizenRegistrationApplicationService {
+
+	private static final String REST_URL="http://ssawebapi-env.eba-k88bsahp.ap-south-1.elasticbeanstalk.com/ssn/{ssn}";
+	
+	@Override
+	public String registerCitizenApplication(CitizenRegistrationApplicationRequest request) {
+		
+		String stateName = null;
+		RestTemplate rt = new RestTemplate();
+		ResponseEntity<String> response = rt.getForEntity(REST_URL, String.class);
+		if("Rhode Island".equals(response)) {
+			stateName = response.getBody();
+		} else {
+			throw new CitizenDoesNotBelongException("Citizen does not belong to Rhode Island");
+		}
+		
+		return stateName;
+	}
+
+}

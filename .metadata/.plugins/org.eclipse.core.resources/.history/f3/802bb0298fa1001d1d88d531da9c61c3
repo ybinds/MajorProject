@@ -1,0 +1,17 @@
+package com.rihs.service;
+
+import com.rihs.binding.CitizenRegistrationApplicationRequest;
+
+public class CitizenRegistrationApplicationServiceImpl implements ICitizenRegistrationApplicationService {
+
+	private static final String REST_URL="http://ssawebapi-env.eba-k88bsahp.ap-south-1.elasticbeanstalk.com/ssn/{ssn}";
+	
+	@Override
+	public String registerCitizenApplication(CitizenRegistrationApplicationRequest request) {
+		
+		
+		
+		return null;
+	}
+
+}

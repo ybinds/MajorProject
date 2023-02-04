@@ -1,0 +1,9 @@
+package com.rihs.repository;
+
+import java.io.Serializable;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PlanRepository extends JpaRepository<PlanRepository, Serializable> {
+
+}

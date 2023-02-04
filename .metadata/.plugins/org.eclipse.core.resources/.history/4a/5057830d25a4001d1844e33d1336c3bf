@@ -1,0 +1,5 @@
+package com.rihs.binding;
+
+public class PlanRequest {
+
+}

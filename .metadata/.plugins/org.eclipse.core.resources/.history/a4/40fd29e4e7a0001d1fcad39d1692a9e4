@@ -1,0 +1,13 @@
+package com.rihs;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ServiceRegisterAppApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ServiceRegisterAppApplication.class, args);
+	}
+
+}
