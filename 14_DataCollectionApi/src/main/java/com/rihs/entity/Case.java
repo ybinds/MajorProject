@@ -12,6 +12,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,8 +48,12 @@ public class Case {
 	@JoinColumn(name="kidFk")
 	private List<Kid> kids;
 	
+	@CreationTimestamp
 	private LocalDate createdDate;
+	
+	@UpdateTimestamp
 	private LocalDate updatedDate;
+	
 	private String createdBy;
 	private String updatedBy;
 	private String status;

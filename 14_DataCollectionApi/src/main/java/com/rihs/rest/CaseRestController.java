@@ -14,6 +14,7 @@ import com.rihs.binding.EducationDetailsRequest;
 import com.rihs.binding.IncomeDetailsRequest;
 import com.rihs.binding.KidsDetailsRequest;
 import com.rihs.binding.PlanRequest;
+import com.rihs.entity.Case;
 import com.rihs.service.ICaseService;
 
 @RestController
@@ -69,15 +70,15 @@ public class CaseRestController {
 	}
 	
 	@PostMapping("/addKids")
-	public ResponseEntity<String> addKidsDetailsAndShowSuccess(
+	public ResponseEntity<Case> addKidsDetailsAndShowSuccess(
 			@RequestBody KidsDetailsRequest request){
-		String message = null;
+		Case c = null;
 		try {
-			message = service.addKidsDetails(request);
+			c = service.addKidsDetails(request);
 		} catch(Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
-		return ResponseEntity.ok(message);
+		return ResponseEntity.ok(c);
 	}
 }

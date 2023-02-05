@@ -114,7 +114,7 @@ public class CaseServiceImpl implements ICaseService {
 		return caseNumber;
 	}
 	
-	public String addKidsDetails(KidsDetailsRequest request) {
+	public Case addKidsDetails(KidsDetailsRequest request) {
 		Case c = null;
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
@@ -130,8 +130,8 @@ public class CaseServiceImpl implements ICaseService {
 				kids.add(krec);
 			}
 			c.setKids(kids);
-			crepo.save(c); // update the case record with plan 
+			c = crepo.save(c); // update the case record with plan 
 		}
-		return "CASE " + caseNumber + " IS SUCCESSFULLY CREATED";
+		return c;
 	}
 }
