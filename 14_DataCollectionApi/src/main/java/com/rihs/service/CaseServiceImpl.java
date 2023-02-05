@@ -1,5 +1,6 @@
 package com.rihs.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -12,7 +13,6 @@ import com.rihs.binding.IncomeDetailsRequest;
 import com.rihs.binding.KidRequest;
 import com.rihs.binding.KidsDetailsRequest;
 import com.rihs.binding.PlanRequest;
-import com.rihs.binding.SummaryResponse;
 import com.rihs.entity.Case;
 import com.rihs.entity.Education;
 import com.rihs.entity.Income;
@@ -88,10 +88,9 @@ public class CaseServiceImpl implements ICaseService {
 			income.setPropertyIncome(request.getPropertyIncome());
 			income.setRentIncome(request.getRentIncome());
 			income.setSalaryIncome(request.getSalaryIncome());
-			income.setCob(c);
 			Income inc = irepo.save(income);
-			//c.setIncomeDetails(inc);
-			//crepo.save(c); // update the case record with plan 
+			c.setIncomeDetails(inc);
+			crepo.save(c); // update the case record with plan 
 		}
 		return caseNumber;
 	}
@@ -108,15 +107,14 @@ public class CaseServiceImpl implements ICaseService {
 			education.setHighestDegree(request.getHighestDegree());
 			education.setGraduationYear(request.getGraduationYear());
 			education.setUniversityName(request.getUniversityName());
-			education.setCob(c);
 			Education edu = erepo.save(education);
-			//c.setEducationDetails(edu);
-			//crepo.save(c); // update the case record with plan 
+			c.setEducationDetails(edu);
+			crepo.save(c); // update the case record with plan 
 		}
 		return caseNumber;
 	}
 	
-	public SummaryResponse addKidsDetails(KidsDetailsRequest request) {
+	public Case addKidsDetails(KidsDetailsRequest request) {
 		Case c = null;
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
@@ -124,23 +122,16 @@ public class CaseServiceImpl implements ICaseService {
 		} else {
 			c = crepo.findById(caseNumber).get();
 			// set income details and save back
-			//List<Kid> kids = new ArrayList<>();
+			List<Kid> kids = new ArrayList<>();
 			for(KidRequest k: request.getKids()) {
 				Kid kid = new Kid();
 				BeanUtils.copyProperties(k, kid);
-				kid.setCob(c);
-				//Kid krec = 
-				krepo.save(kid);
-				//kids.add(krec);
+				Kid krec = krepo.save(kid);
+				kids.add(krec);
 			}
-			//c.setKids(kids);
-			//c = crepo.save(c); // update the case record with plan 
+			c.setKids(kids);
+			c = crepo.save(c); // update the case record with plan 
 		}
-		SummaryResponse sr = new SummaryResponse();
-		sr.setCob(c);
-		sr.setEob(erepo.findByCob(c));
-		sr.setIob(irepo.findByCob(c));
-		sr.setKob(krepo.findByCob(c));
-		return sr;
+		return c;
 	}
 }
