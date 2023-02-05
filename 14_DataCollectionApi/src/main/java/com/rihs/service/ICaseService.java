@@ -5,7 +5,7 @@ import com.rihs.binding.EducationDetailsRequest;
 import com.rihs.binding.IncomeDetailsRequest;
 import com.rihs.binding.KidsDetailsRequest;
 import com.rihs.binding.PlanRequest;
-import com.rihs.entity.Case;
+import com.rihs.binding.SummaryResponse;
 
 public interface ICaseService {
 
@@ -13,5 +13,5 @@ public interface ICaseService {
 	Long addPlan(PlanRequest request);
 	Long addIncomeDetails(IncomeDetailsRequest request);
 	Long addEducationDetails(EducationDetailsRequest request);
-	Case addKidsDetails(KidsDetailsRequest request);
+	SummaryResponse addKidsDetails(KidsDetailsRequest request);
 }
