@@ -70,7 +70,7 @@ public class CaseRestController {
 	}
 	
 	@PostMapping("/addKids")
-	public ResponseEntity<Case> addKidsDetailsAndShowSuccess(
+	public ResponseEntity<Case> addKidsDetailsAndShowSummary(
 			@RequestBody KidsDetailsRequest request){
 		Case c = null;
 		try {
