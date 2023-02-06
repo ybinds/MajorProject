@@ -17,8 +17,11 @@ import com.rihs.binding.PlanRequest;
 import com.rihs.entity.Case;
 import com.rihs.service.ICaseService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/v1/api/case")
+@Slf4j
 public class CaseRestController {
 
 	@Autowired
@@ -26,59 +29,73 @@ public class CaseRestController {
 	
 	@GetMapping("/create/{appId}")
 	public ResponseEntity<CasePlanResponse> createCaseAndShowPlans(@PathVariable("appId") Long appId){
+		log.info("Entering into creatCaseAndShowPlans method");
 		CasePlanResponse response = service.createCase(appId);
+		log.info("Exiting from createCaseAndShowPlans method");
 		return ResponseEntity.ok(response);
 	}
 	
 	@PostMapping("/addPlan")
 	public ResponseEntity<Long> addPlanAndShowIncomeDetails(
 			@RequestBody PlanRequest request){
+		log.info("Entering into addPlanAndShowIncomeDetails method");
 		Long caseNum = null;
 		try {
 			caseNum = service.addPlan(request);
 		} catch(Exception e) {
+			log.error("Error occurred while adding plan");
 			e.printStackTrace();
 			throw e;
 		}
+		log.info("Exiting from addPlanAndShowIncomeDetails method");
 		return ResponseEntity.ok(caseNum);
 	}
 	
 	@PostMapping("/addIncome")
 	public ResponseEntity<Long> addIncomeDetailsAndShowEducationDetails(
 			@RequestBody IncomeDetailsRequest request){
+		log.info("Entering into addIncomeDetailsAndShowEducationDetails method");
 		Long caseNum = null;
 		try {
 			caseNum = service.addIncomeDetails(request);
 		} catch(Exception e) {
+			log.error("Error occurred while adding Income Details");
 			e.printStackTrace();
 			throw e;
 		}
+		log.info("Exiting from addIncomeDetailsAndShowEducationDetails method");
 		return ResponseEntity.ok(caseNum);
 	}
 	
 	@PostMapping("/addEducation")
 	public ResponseEntity<Long> addEducationDetailsAndShowKidsDetails(
 			@RequestBody EducationDetailsRequest request){
+		log.info("Entering into addEducationDetailsAndShowKidsDetails method");
 		Long caseNum = null;
 		try {
 			caseNum = service.addEducationDetails(request);
 		} catch(Exception e) {
+			log.error("Error occurred while adding Education Details");
 			e.printStackTrace();
 			throw e;
 		}
+		log.info("Exiting from addEducationDetailsAndShowKidsDetails method");
 		return ResponseEntity.ok(caseNum);
 	}
 	
 	@PostMapping("/addKids")
 	public ResponseEntity<Case> addKidsDetailsAndShowSummary(
 			@RequestBody KidsDetailsRequest request){
+		log.info("Entering into addKidsDetailsAndShowSummary method");
 		Case c = null;
 		try {
 			c = service.addKidsDetails(request);
 		} catch(Exception e) {
+			log.info("Error occurred while adding Kids Details");
 			e.printStackTrace();
 			throw e;
 		}
+		log.info("Exiting from addKidsDetailsAndShowSummary method");
 		return ResponseEntity.ok(c);
 	}
 }

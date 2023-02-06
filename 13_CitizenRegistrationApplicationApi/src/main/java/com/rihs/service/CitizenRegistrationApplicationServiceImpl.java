@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.rihs.binding.CitizenRegistrationApplicationRequest;
 import com.rihs.entity.CitizenRegistrationApplication;
+import com.rihs.exception.CitizenApplicationNotFoundException;
 import com.rihs.exception.CitizenDoesNotBelongException;
 import com.rihs.repository.CitizenRegistrationApplicationRepository;
 
@@ -45,5 +46,13 @@ public class CitizenRegistrationApplicationServiceImpl implements ICitizenRegist
 		}
 		logger.info("Exiting from register service method");
 		return message;
+	}
+
+	@Override
+	public CitizenRegistrationApplication getApplication(Long appId) {
+		logger.info("Entering into getApplication method");
+		CitizenRegistrationApplication app = repo.findByCitizenAppId(appId).orElseThrow(() -> new CitizenApplicationNotFoundException("Application with id: " + appId + " does not exist"));
+		logger.info("Exiting from getApplication method");
+		return app;
 	}
 }

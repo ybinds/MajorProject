@@ -1,0 +1,15 @@
+package com.rihs.consumer;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.rihs.binding.CitizenRegistrationApplicationRequest;
+
+@FeignClient("CITIZENREGISTRATIONAPPLICATIONAPI")
+public class CitizenAppConsumerFeign {
+
+	@PostMapping("/register")
+	public ResponseEntity<String> registerCitizen(@RequestBody CitizenRegistrationApplicationRequest request);
+}

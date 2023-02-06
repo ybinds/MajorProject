@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.rihs.binding.CasePlanResponse;
@@ -13,12 +14,15 @@ import com.rihs.binding.IncomeDetailsRequest;
 import com.rihs.binding.KidRequest;
 import com.rihs.binding.KidsDetailsRequest;
 import com.rihs.binding.PlanRequest;
+import com.rihs.consumer.CitizenAppConsumerFeign;
 import com.rihs.entity.Case;
+import com.rihs.entity.CitizenRegistrationApplication;
 import com.rihs.entity.Education;
 import com.rihs.entity.Income;
 import com.rihs.entity.Kid;
 import com.rihs.entity.Plan;
 import com.rihs.exception.CaseNotFoundException;
+import com.rihs.exception.CitizenApplicationNotFoundException;
 import com.rihs.exception.PlanNotFoundException;
 import com.rihs.repository.CaseRepository;
 import com.rihs.repository.EducationRepository;
@@ -26,7 +30,10 @@ import com.rihs.repository.IncomeRepository;
 import com.rihs.repository.KidRepository;
 import com.rihs.repository.PlanRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class CaseServiceImpl implements ICaseService {
 
 	@Autowired
@@ -43,28 +50,42 @@ public class CaseServiceImpl implements ICaseService {
 	
 	@Autowired
 	private KidRepository krepo;
+	
+	@Autowired
+	private CitizenAppConsumerFeign consumer;
 
 	public CasePlanResponse createCase(Long appId) {
+		log.info("Entering into createCase method");
 		Case c = new Case();
-
-		// I have to verify if the given appId is valid or not, for that I need to
-		// inter-communicate with CitizenRegistrationApplicationApi
-		// But since I am not running, for now I skipped that once that test is done,
-		// then I will add the Feign and set
-		// inter-communication
-		c.setAppId(appId);
-		Case savedCase = crepo.save(c); // create a fresh case
-		CasePlanResponse response = new CasePlanResponse();
-		response.setCaseNumber(savedCase.getCaseNumber());
-		List<Plan> plans = prepo.findAll();
-		response.setPlan(plans);
-		return response;
+		ResponseEntity<CitizenRegistrationApplication> application = null;
+		try {
+			application = consumer.getApplication(appId);
+			if(application.getBody()!=null) {
+				c.setAppId(appId);
+				Case savedCase = crepo.save(c); // create a fresh case
+				CasePlanResponse response = new CasePlanResponse();
+				response.setCaseNumber(savedCase.getCaseNumber());
+				List<Plan> plans = prepo.findAll();
+				response.setPlan(plans);				
+				return response;
+			} else {
+				log.warn("Application id: " + appId + " did not yield any result");
+			}
+		} catch(CitizenApplicationNotFoundException cnfe) {
+			log.error("Error occurred while retrieving Citizen Application");
+			cnfe.printStackTrace();
+			throw cnfe;
+		}
+		log.info("Exiting from createCase method");
+		return null;
 	}
 
 	public Long addPlan(PlanRequest request) {
+		log.info("Entering into addPlan method");
 		Case c = null;
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
+			log.error("No Case was found with the given caseNumber " + caseNumber);
 			throw new CaseNotFoundException("Case " + caseNumber + " IS NOT FOUND");
 		} else {
 			c = crepo.findById(caseNumber).get();
@@ -73,13 +94,16 @@ public class CaseServiceImpl implements ICaseService {
 			c.setPlan(plan);
 			crepo.save(c); // update the case record with plan 
 		}
+		log.info("Exiting from addPlan method");
 		return caseNumber;
 	}
 
 	public Long addIncomeDetails(IncomeDetailsRequest request) {
+		log.info("Entering into addIncomeDetails method");
 		Case c = null;
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
+			log.error("No Case was found with the given caseNumber " + caseNumber);
 			throw new CaseNotFoundException("Case " + caseNumber + " IS NOT FOUND");
 		} else {
 			c = crepo.findById(caseNumber).get();
@@ -92,13 +116,16 @@ public class CaseServiceImpl implements ICaseService {
 			c.setIncomeDetails(inc);
 			crepo.save(c); // update the case record with plan 
 		}
+		log.info("Exiting from addIncomeDetails method");
 		return caseNumber;
 	}
 
 	public Long addEducationDetails(EducationDetailsRequest request) {
+		log.info("Entering into addEducationDetails method");
 		Case c = null;
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
+			log.error("No Case was found with the given caseNumber " + caseNumber);
 			throw new CaseNotFoundException("Case " + caseNumber + " IS NOT FOUND");
 		} else {
 			c = crepo.findById(caseNumber).get();
@@ -111,13 +138,16 @@ public class CaseServiceImpl implements ICaseService {
 			c.setEducationDetails(edu);
 			crepo.save(c); // update the case record with plan 
 		}
+		log.info("Exiting from addEducationDetails method");
 		return caseNumber;
 	}
 	
 	public Case addKidsDetails(KidsDetailsRequest request) {
+		log.info("Entering into addKidsDetails method");
 		Case c = null;
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
+			log.error("No Case was found with the given caseNumber " + caseNumber);
 			throw new CaseNotFoundException("Case " + caseNumber + " IS NOT FOUND");
 		} else {
 			c = crepo.findById(caseNumber).get();
@@ -132,6 +162,7 @@ public class CaseServiceImpl implements ICaseService {
 			c.setKids(kids);
 			c = crepo.save(c); // update the case record with plan 
 		}
+		log.info("Exiting from addKidsDetails method");
 		return c;
 	}
 }
