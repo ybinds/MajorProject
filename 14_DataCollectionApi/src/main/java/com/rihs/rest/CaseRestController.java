@@ -15,6 +15,7 @@ import com.rihs.binding.IncomeDetailsRequest;
 import com.rihs.binding.KidsDetailsRequest;
 import com.rihs.binding.PlanRequest;
 import com.rihs.entity.Case;
+import com.rihs.exception.CaseNotFoundException;
 import com.rihs.service.ICaseService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -97,5 +98,21 @@ public class CaseRestController {
 		}
 		log.info("Exiting from addKidsDetailsAndShowSummary method");
 		return ResponseEntity.ok(c);
+	}
+	
+	@GetMapping("/get/{caseNumber}")
+	public ResponseEntity<Case> getCaseInfo(@PathVariable("caseNumber") Long caseNumber){
+		log.info("Entering into getCaseInfo method");
+		ResponseEntity<Case> response = null;
+		try {
+			Case c = service.getCaseDetails(caseNumber);
+			response = ResponseEntity.ok(c);
+		} catch(CaseNotFoundException cnfe) {
+			log.error("Error occurred while retrieving Case Details");
+			cnfe.printStackTrace();
+			throw cnfe;
+		}
+		log.info("Exiting from getCaseInfo method");
+		return response;
 	}
 }

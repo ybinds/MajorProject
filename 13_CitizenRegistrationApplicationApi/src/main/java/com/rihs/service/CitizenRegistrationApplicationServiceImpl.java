@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.rihs.binding.CitizenRegistrationApplicationRequest;
@@ -12,6 +13,7 @@ import com.rihs.exception.CitizenApplicationNotFoundException;
 import com.rihs.exception.CitizenDoesNotBelongException;
 import com.rihs.repository.CitizenRegistrationApplicationRepository;
 
+@Service
 public class CitizenRegistrationApplicationServiceImpl implements ICitizenRegistrationApplicationService {
 
 	private static final String REST_URL="http://ssawebapi-env.eba-k88bsahp.ap-south-1.elasticbeanstalk.com/ssn/{ssn}";

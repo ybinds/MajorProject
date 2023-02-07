@@ -86,7 +86,7 @@ public class CaseServiceImpl implements ICaseService {
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
 			log.error("No Case was found with the given caseNumber " + caseNumber);
-			throw new CaseNotFoundException("Case " + caseNumber + " IS NOT FOUND");
+			throw new CaseNotFoundException("CASE " + caseNumber + " NOT FOUND");
 		} else {
 			c = crepo.findById(caseNumber).get();
 			// get plan if exists else throw exception
@@ -104,7 +104,7 @@ public class CaseServiceImpl implements ICaseService {
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
 			log.error("No Case was found with the given caseNumber " + caseNumber);
-			throw new CaseNotFoundException("Case " + caseNumber + " IS NOT FOUND");
+			throw new CaseNotFoundException("CASE " + caseNumber + " NOT FOUND");
 		} else {
 			c = crepo.findById(caseNumber).get();
 			// set income details and save back
@@ -126,7 +126,7 @@ public class CaseServiceImpl implements ICaseService {
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
 			log.error("No Case was found with the given caseNumber " + caseNumber);
-			throw new CaseNotFoundException("Case " + caseNumber + " IS NOT FOUND");
+			throw new CaseNotFoundException("CASE " + caseNumber + " NOT FOUND");
 		} else {
 			c = crepo.findById(caseNumber).get();
 			// set education details and save back
@@ -148,7 +148,7 @@ public class CaseServiceImpl implements ICaseService {
 		Long caseNumber = request.getCaseNumber();
 		if (caseNumber == null || !crepo.existsById(caseNumber)) { // check if the case number sent exists or not
 			log.error("No Case was found with the given caseNumber " + caseNumber);
-			throw new CaseNotFoundException("Case " + caseNumber + " IS NOT FOUND");
+			throw new CaseNotFoundException("CASE " + caseNumber + " NOT FOUND");
 		} else {
 			c = crepo.findById(caseNumber).get();
 			// set income details and save back
@@ -164,5 +164,10 @@ public class CaseServiceImpl implements ICaseService {
 		}
 		log.info("Exiting from addKidsDetails method");
 		return c;
+	}
+
+	@Override
+	public Case getCaseDetails(Long caseNumber) {
+		return crepo.findById(caseNumber).orElseThrow(() -> new CaseNotFoundException("Case " + caseNumber + " not found"));
 	}
 }

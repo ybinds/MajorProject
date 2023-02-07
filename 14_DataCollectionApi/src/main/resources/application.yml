@@ -11,7 +11,7 @@ server:
   port: 8082
 spring:
   application:
-    name: DATACOLLECTIONAPI
+    name: DATA-COLLECTION-API
   boot:
     admin:
       client:

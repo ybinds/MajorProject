@@ -14,4 +14,5 @@ public interface ICaseService {
 	Long addIncomeDetails(IncomeDetailsRequest request);
 	Long addEducationDetails(EducationDetailsRequest request);
 	Case addKidsDetails(KidsDetailsRequest request);
+	Case getCaseDetails(Long caseNumber);
 }
