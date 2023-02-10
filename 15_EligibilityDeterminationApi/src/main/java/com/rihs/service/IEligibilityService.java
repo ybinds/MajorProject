@@ -1,8 +1,10 @@
 package com.rihs.service;
 
-import com.rihs.entity.EligibilityDetails;
+import com.rihs.binding.EligibilityDetailsResponse;
 
 public interface IEligibilityService {
 
-	EligibilityDetails determineEligibility(Long caseNumber);
+	EligibilityDetailsResponse determineEligibility(Long caseNumber);
+
+	EligibilityDetailsResponse getEligibilityDetails(Long caseNum);
 }

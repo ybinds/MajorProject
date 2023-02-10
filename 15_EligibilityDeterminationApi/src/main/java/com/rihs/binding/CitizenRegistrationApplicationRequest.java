@@ -9,11 +9,11 @@ import lombok.Data;
 @Data
 public class CitizenRegistrationApplicationRequest {
 	
-	private String fullName;
-	private String email;
-	private Long mobileNum;
-	private String gender;
-	@JsonFormat(pattern = "mm/dd/yyyy")
-	private LocalDate dob;
-	private Long ssn;
+	private String citizenFullName;
+	private String citizenEmail;
+	private Long citizenMobileNum;
+	private String citizenGender;
+	@JsonFormat(pattern = "MM/dd/yyyy")
+	private LocalDate citizenDob;
+	private Long citizenSsn;
 }

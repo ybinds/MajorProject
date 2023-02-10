@@ -31,7 +31,13 @@ public class CaseRestController {
 	@GetMapping("/create/{appId}")
 	public ResponseEntity<CasePlanResponse> createCaseAndShowPlans(@PathVariable("appId") Long appId){
 		log.info("Entering into creatCaseAndShowPlans method");
-		CasePlanResponse response = service.createCase(appId);
+		CasePlanResponse response = null;
+		try {
+			response = service.createCase(appId);
+		} catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 		log.info("Exiting from createCaseAndShowPlans method");
 		return ResponseEntity.ok(response);
 	}

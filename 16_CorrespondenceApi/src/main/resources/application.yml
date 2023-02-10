@@ -1,0 +1,42 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+server:
+  port: 8084
+spring:
+  application:
+    name: CORRESPONDENCE-API
+  boot:
+    admin:
+      client:
+        url: http://locahost:1111/
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: Y3llapragad@
+    url: jdbc:mysql://localhost:3306/major_project
+    username: root
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: himayella123@gmail.com
+    password: vgualojphzwzulbm
+    port: 587
+    protocol: smtp
+    test-connection: false
+    properties:
+      mail:
+        smtp: 
+          auth: true
+          starttls:
+            enable: true

@@ -2,11 +2,14 @@ package com.rihs.service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.rihs.binding.EligibilityDetailsResponse;
 import com.rihs.consumer.CasePlanApplicationConsumer;
 import com.rihs.consumer.CitizenAppConsumerFeign;
 import com.rihs.entity.Case;
@@ -36,7 +39,7 @@ public class EligibilityServiceImpl implements IEligibilityService {
 	@Autowired
 	private TriggersRepository trepo;
 	
-	public EligibilityDetails determineEligibility(Long caseNumber) {
+	public EligibilityDetailsResponse determineEligibility(Long caseNumber) {
 		log.info("Entering into determineEligibility method");
 		// get case info
 		ResponseEntity<Case> caseInfo = consumer.getCaseInfo(caseNumber);
@@ -81,8 +84,11 @@ public class EligibilityServiceImpl implements IEligibilityService {
 		t.setTriggerPdf(null);
 		t.setTriggerStatus("Pending");
 		trepo.save(t);
+		
+		EligibilityDetailsResponse EDResponse = new EligibilityDetailsResponse();
+		BeanUtils.copyProperties(savedED, EDResponse);
 		log.info("Exiting from determineEligibility method");
-		return savedED;
+		return EDResponse;
 	}
 
 	private String checkEligible(Case c, CitizenRegistrationApplication citizen) {
@@ -113,6 +119,14 @@ public class EligibilityServiceImpl implements IEligibilityService {
 		} 
 		log.info("Exiting from checkEligibility method");
 		return reason;
+	}
+
+	@Override
+	public EligibilityDetailsResponse getEligibilityDetails(Long caseNum) {
+		EligibilityDetailsResponse edResponse = new EligibilityDetailsResponse();
+		EligibilityDetails ed = repo.findByCaseNum(caseNum).orElseThrow(() -> new CaseNotFoundException("CASE WITH " + caseNum + " IS NOT FOUND"));
+		BeanUtils.copyProperties(ed, edResponse);
+		return edResponse;
 	}
 
 }

@@ -8,4 +8,6 @@ import com.rihs.entity.Case;
 
 public interface CaseRepository extends JpaRepository<Case, Serializable> {
 
+	Case findByAppId(Long appId);
+
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rihs.entity.EligibilityDetails;
+import com.rihs.binding.EligibilityDetailsResponse;
 import com.rihs.service.IEligibilityService;
 
 @RestController
@@ -18,11 +18,24 @@ public class ElibilityDetailsRestController {
 	private IEligibilityService service;
 
 	@GetMapping("/check/{caseNum}")
-	public ResponseEntity<EligibilityDetails> determineEligibility(@PathVariable("caseNum") Long caseNum){
-		ResponseEntity<EligibilityDetails> response = null;
+	public ResponseEntity<EligibilityDetailsResponse> determineEligibility(@PathVariable("caseNum") Long caseNum){
+		ResponseEntity<EligibilityDetailsResponse> response = null;
 		try {
-			EligibilityDetails eligibility = service.determineEligibility(caseNum);
+			EligibilityDetailsResponse eligibility = service.determineEligibility(caseNum);
 			response = ResponseEntity.ok(eligibility);
+		} catch(Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return response;
+	}
+	
+	@GetMapping("/get/{caseNum}")
+	public ResponseEntity<EligibilityDetailsResponse> getEligibilityDetails(@PathVariable("caseNum") Long caseNum){
+		ResponseEntity<EligibilityDetailsResponse> response = null;
+		try {
+			EligibilityDetailsResponse ed = service.getEligibilityDetails(caseNum);
+			response = ResponseEntity.ok(ed);
 		} catch(Exception e) {
 			e.printStackTrace();
 			throw e;

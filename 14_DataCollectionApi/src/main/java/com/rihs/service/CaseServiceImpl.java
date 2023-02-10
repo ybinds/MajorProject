@@ -22,6 +22,7 @@ import com.rihs.entity.Income;
 import com.rihs.entity.Kid;
 import com.rihs.entity.Plan;
 import com.rihs.exception.CaseNotFoundException;
+import com.rihs.exception.CaseRaisedForApplicationException;
 import com.rihs.exception.CitizenApplicationNotFoundException;
 import com.rihs.exception.PlanNotFoundException;
 import com.rihs.repository.CaseRepository;
@@ -41,16 +42,16 @@ public class CaseServiceImpl implements ICaseService {
 
 	@Autowired
 	private PlanRepository prepo;
-	
+
 	@Autowired
 	private IncomeRepository irepo;
-	
+
 	@Autowired
 	private EducationRepository erepo;
-	
+
 	@Autowired
 	private KidRepository krepo;
-	
+
 	@Autowired
 	private CitizenAppConsumerFeign consumer;
 
@@ -60,18 +61,24 @@ public class CaseServiceImpl implements ICaseService {
 		ResponseEntity<CitizenRegistrationApplication> application = null;
 		try {
 			application = consumer.getApplication(appId);
-			if(application.getBody()!=null) {
-				c.setAppId(appId);
-				Case savedCase = crepo.save(c); // create a fresh case
-				CasePlanResponse response = new CasePlanResponse();
-				response.setCaseNumber(savedCase.getCaseNumber());
-				List<Plan> plans = prepo.findAll();
-				response.setPlan(plans);				
-				return response;
+			if (application.getBody() != null) {
+				Case appAvailable = crepo.findByAppId(appId);
+				if (appAvailable == null) {
+					c.setAppId(appId);
+					Case savedCase = crepo.save(c); // create a fresh case
+					CasePlanResponse response = new CasePlanResponse();
+					response.setCaseNumber(savedCase.getCaseNumber());
+					List<Plan> plans = prepo.findAll();
+					response.setPlan(plans);
+					return response;
+				} else {
+					log.warn("Case is raised for application " + appId + " already");
+					throw new CaseRaisedForApplicationException("Case is raised for application " + appId + " already");
+				}
 			} else {
 				log.warn("Application id: " + appId + " did not yield any result");
 			}
-		} catch(CitizenApplicationNotFoundException cnfe) {
+		} catch (CitizenApplicationNotFoundException cnfe) {
 			log.error("Error occurred while retrieving Citizen Application");
 			cnfe.printStackTrace();
 			throw cnfe;
@@ -90,9 +97,10 @@ public class CaseServiceImpl implements ICaseService {
 		} else {
 			c = crepo.findById(caseNumber).get();
 			// get plan if exists else throw exception
-			Plan plan = prepo.findById(request.getPlanId()).orElseThrow(() -> new PlanNotFoundException("PLAN " + request.getPlanId() + " IS NOT FOUND"));
+			Plan plan = prepo.findById(request.getPlanId())
+					.orElseThrow(() -> new PlanNotFoundException("PLAN " + request.getPlanId() + " IS NOT FOUND"));
 			c.setPlan(plan);
-			crepo.save(c); // update the case record with plan 
+			crepo.save(c); // update the case record with plan
 		}
 		log.info("Exiting from addPlan method");
 		return caseNumber;
@@ -114,7 +122,7 @@ public class CaseServiceImpl implements ICaseService {
 			income.setSalaryIncome(request.getSalaryIncome());
 			Income inc = irepo.save(income);
 			c.setIncomeDetails(inc);
-			crepo.save(c); // update the case record with plan 
+			crepo.save(c); // update the case record with plan
 		}
 		log.info("Exiting from addIncomeDetails method");
 		return caseNumber;
@@ -130,18 +138,18 @@ public class CaseServiceImpl implements ICaseService {
 		} else {
 			c = crepo.findById(caseNumber).get();
 			// set education details and save back
-			Education education= new Education();
+			Education education = new Education();
 			education.setHighestDegree(request.getHighestDegree());
 			education.setGraduationYear(request.getGraduationYear());
 			education.setUniversityName(request.getUniversityName());
 			Education edu = erepo.save(education);
 			c.setEducationDetails(edu);
-			crepo.save(c); // update the case record with plan 
+			crepo.save(c); // update the case record with plan
 		}
 		log.info("Exiting from addEducationDetails method");
 		return caseNumber;
 	}
-	
+
 	public Case addKidsDetails(KidsDetailsRequest request) {
 		log.info("Entering into addKidsDetails method");
 		Case c = null;
@@ -153,14 +161,14 @@ public class CaseServiceImpl implements ICaseService {
 			c = crepo.findById(caseNumber).get();
 			// set income details and save back
 			List<Kid> kids = new ArrayList<>();
-			for(KidRequest k: request.getKids()) {
+			for (KidRequest k : request.getKids()) {
 				Kid kid = new Kid();
 				BeanUtils.copyProperties(k, kid);
 				Kid krec = krepo.save(kid);
 				kids.add(krec);
 			}
 			c.setKids(kids);
-			c = crepo.save(c); // update the case record with plan 
+			c = crepo.save(c); // update the case record with plan
 		}
 		log.info("Exiting from addKidsDetails method");
 		return c;
@@ -168,6 +176,7 @@ public class CaseServiceImpl implements ICaseService {
 
 	@Override
 	public Case getCaseDetails(Long caseNumber) {
-		return crepo.findById(caseNumber).orElseThrow(() -> new CaseNotFoundException("Case " + caseNumber + " not found"));
+		return crepo.findById(caseNumber)
+				.orElseThrow(() -> new CaseNotFoundException("Case " + caseNumber + " not found"));
 	}
 }
