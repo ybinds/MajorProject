@@ -6,11 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -23,6 +25,7 @@ import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.rihs.binding.CorrespondenceResponse;
 import com.rihs.binding.EligibilityDetailsResponse;
 import com.rihs.binding.EmailReq;
 import com.rihs.consumer.CasePlanApplicationConsumer;
@@ -35,6 +38,7 @@ import com.rihs.entity.Triggers;
 import com.rihs.repository.TriggersRepository;
 import com.rihs.util.EmailUtil;
 
+@Service
 public class CorrespondenceServiceImpl implements ICorrespondenceService {
 
 	@Autowired
@@ -52,12 +56,15 @@ public class CorrespondenceServiceImpl implements ICorrespondenceService {
 	@Autowired
 	private EmailUtil util;
 
-	public void sendCorrespondence() {
+	private Integer successTriggers = 0;
+
+	public CorrespondenceResponse sendCorrespondence() {
 		List<Triggers> pendingTriggers = repo.findByTriggerStatus("Pending");
+		Integer totalTriggers = pendingTriggers.size();
 		pendingTriggers.forEach((pt) -> {
 			EligibilityDetailsResponse response = edConsumer.getEligibilityDetails(pt.getCaseNum()).getBody();
 			EligibilityDetails ed = new EligibilityDetails();
-			Case caseInfo = caseConsumer.getCaseInfo(ed.getCaseNum()).getBody();
+			Case caseInfo = caseConsumer.getCaseInfo(pt.getCaseNum()).getBody();
 			CitizenRegistrationApplication citizen = citizenConsumer.getApplication(caseInfo.getAppId()).getBody();
 			BeanUtils.copyProperties(response, ed);
 			try {
@@ -66,10 +73,11 @@ public class CorrespondenceServiceImpl implements ICorrespondenceService {
 				e.printStackTrace();
 			}
 			EmailReq req = new EmailReq();
-			req.setEmailFrom("ybinds@gmail.com");
+			req.setEmailFrom("noreply@rihs.com");
 			req.setEmailTo(citizen.getCitizenEmail());
 			req.setEmailSubject("Application Status Notice for AppId: " + caseInfo.getAppId());
 			req.setEmailText(setEmailBody(ed));
+			req.setFileContent(pt.getTriggerPdf());
 			try {
 				util.sendEmail(req);
 			} catch (Exception e) {
@@ -77,18 +85,23 @@ public class CorrespondenceServiceImpl implements ICorrespondenceService {
 			}
 			pt.setTriggerStatus("Completed");
 			repo.save(pt);
+			successTriggers++;
 		});
+		CorrespondenceResponse response = new CorrespondenceResponse();
+		response.setTotalTriggers(totalTriggers);
+		response.setSuccessTriggers(successTriggers);
+		response.setFailedTriggers(totalTriggers - successTriggers);
+		return response;
 	}
 
 	private String setEmailBody(EligibilityDetails ed) {
 		StringBuffer sb = new StringBuffer();
-		String filename = "";
+		String filename = "PlanStatusEmail.txt";
 		try (Stream<String> lines = Files.lines(Paths.get(filename))) {
 			lines.forEach(line -> {
-//				line = line.replace("${FName}", user.getUserFirstName());
-//				line = line.replace("${LName}", user.getUserLastName());
-//				line = line.replace("${Email}", user.getUserEmail());
-//				line = line.replace("${Pwd}", user.getUserPassword());
+				line = line.replace("{fullName}", ed.getHolderName());
+				line = line.replace("{planName}", ed.getPlanName());
+				line = line.replace("{planStatus}", ed.getPlanStatus());
 				sb.append(line);
 			});
 		} catch (IOException e) {
@@ -99,17 +112,18 @@ public class CorrespondenceServiceImpl implements ICorrespondenceService {
 
 	private byte[] writeToPdf(EligibilityDetails ed) throws DocumentException, IOException {
 		// Creating the Object of Document
+		Document document = new Document(PageSize.A4);
 		Document document1 = new Document(PageSize.A4);
-		Document document2 = new Document(PageSize.A4);
+
 		// Getting instance of PdfWriter
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		PdfWriter pdfWriter = PdfWriter.getInstance(document1, baos);
-		
-		FileOutputStream fos = new FileOutputStream("/"+ed.getHolderName()+"-"+ed.getTraceId());
-		PdfWriter.getInstance(document2, fos);
+		PdfWriter pdfWriter = PdfWriter.getInstance(document, baos);
+		FileOutputStream fos = new FileOutputStream(ed.getHolderName() + "-" + ed.getCaseNum() + ".pdf");
+		PdfWriter pdfWriter1 = PdfWriter.getInstance(document1, fos);
+
 		// Opening the created document to change it
+		document.open();
 		document1.open();
-		document2.open();
 		// Creating font
 		// Setting font style and size
 		Font fontTitle = FontFactory.getFont(FontFactory.TIMES_ROMAN);
@@ -120,64 +134,101 @@ public class CorrespondenceServiceImpl implements ICorrespondenceService {
 		// Aligning the paragraph in the document
 		p.setAlignment(Paragraph.ALIGN_CENTER);
 		// Adding the created paragraph in the document
+		document.add(p);
 		document1.add(p);
-		document2.add(p);
 
-		// Creating a table of the 4 columns
-		PdfPTable table = new PdfPTable(8);
+//		document.add(Chunk.NEWLINE);        //Blank line
+//		document.add(new LineSeparator());      //Thick line
+//
+//		document1.add(Chunk.NEWLINE);        //Blank line
+//		document1.add(new LineSeparator());      //Thick line
+
+		// Creating a table of the 2 columns
+		PdfPTable table = new PdfPTable(2);
 		// Setting width of the table, its columns and spacing
 		table.setWidthPercentage(100f);
-		table.setWidths(new int[] { 2, 3, 6, 4, 3, 4, 2, 3 });
+		table.setWidths(new int[] { 10, 20 });
 		table.setSpacingBefore(5);
 		// Create Table Cells for the table header
 		PdfPCell cell = new PdfPCell();
 		// Setting the background color and padding of the table cell
-		cell.setBackgroundColor(CMYKColor.GRAY);
+		cell.setBackgroundColor(CMYKColor.WHITE);
 		cell.setPadding(5);
 
 		// Creating font
 		// Setting font style and size
 		Font font = FontFactory.getFont(FontFactory.HELVETICA);
-		font.setColor(CMYKColor.WHITE);
+		font.setColor(CMYKColor.BLACK);
 		// Adding headings in the created table cell or header
 		// Adding Cell to table
-		cell.setPhrase(new Phrase("Case Number : " + ed.getCaseNum(), font));
+		cell.setPhrase(new Phrase("Case Number : ", font));
 		table.addCell(cell);
-		cell.setPhrase(new Phrase("Name : " + ed.getHolderName(), font));
-		table.addCell(cell);
-		cell.setPhrase(new Phrase("SSN : " + ed.getHolderSsn(), font));
-		table.addCell(cell);
-		cell.setPhrase(new Phrase("Plan Name : " + ed.getPlanName(), font));
-		table.addCell(cell);
-		cell.setPhrase(new Phrase("Plan Status : " + ed.getPlanStatus(), font));
-		table.addCell(cell);
-		if ("Approved".equals(ed.getPlanStatus())) {
-			cell.setPhrase(new Phrase("Start Date : " + ed.getPlanStartDate(), font));
-			table.addCell(cell);
-			cell.setPhrase(new Phrase("End Date : " + ed.getPlanEndDate(), font));
-			table.addCell(cell);
-			cell.setPhrase(new Phrase("Benefit Amount : " + ed.getBenefitAmount(), font));
-			table.addCell(cell);
-		} else {
-			cell.setPhrase(new Phrase("Denial Reason : " + ed.getDenialReason(), font));
-			table.addCell(cell);
-		}
-		cell.setPhrase(new Phrase("DHS Office Address : Some Address", font));
-		table.addCell(cell);
-		cell.setPhrase(new Phrase("Contact Number : Some Number", font));
-		table.addCell(cell);
-		cell.setPhrase(new Phrase("Website : Some Url", font));
+		cell.setPhrase(new Phrase(String.valueOf(ed.getCaseNum()), font));
 		table.addCell(cell);
 
+		cell.setPhrase(new Phrase("Name : ", font));
+		table.addCell(cell);
+		cell.setPhrase(new Phrase(ed.getHolderName(), font));
+		table.addCell(cell);
+
+		cell.setPhrase(new Phrase("SSN : ", font));
+		table.addCell(cell);
+		String ssn = "XXX XX " + String.valueOf(ed.getHolderSsn()).substring(5);
+		cell.setPhrase(new Phrase(ssn, font));
+		table.addCell(cell);
+
+		cell.setPhrase(new Phrase("Plan Name : ", font));
+		table.addCell(cell);
+		cell.setPhrase(new Phrase(ed.getPlanName(), font));
+		table.addCell(cell);
+
+		cell.setPhrase(new Phrase("Plan Status : ", font));
+		table.addCell(cell);
+		cell.setPhrase(new Phrase(ed.getPlanStatus(), font));
+		table.addCell(cell);
+
+		if ("Approved".equals(ed.getPlanStatus())) {
+			DateTimeFormatter formatters = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+			cell.setPhrase(new Phrase("Start Date : ", font));
+			table.addCell(cell);
+			cell.setPhrase(new Phrase(ed.getPlanStartDate().format(formatters), font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("End Date : ", font));
+			table.addCell(cell);
+			cell.setPhrase(new Phrase(ed.getPlanEndDate().format(formatters), font));
+			table.addCell(cell);
+
+			cell.setPhrase(new Phrase("Benefit Amount : ", font));
+			table.addCell(cell);
+			cell.setPhrase(new Phrase(ed.getBenefitAmount().toString(), font));
+			table.addCell(cell);
+		} else {
+			cell.setPhrase(new Phrase("Denial Reason : ", font));
+			table.addCell(cell);
+			cell.setPhrase(new Phrase(ed.getDenialReason().toString(), font));
+			table.addCell(cell);
+		}
+
 		// Adding the created table to the document
+		document.add(table);
 		document1.add(table);
-		document2.add(table);
-		// Closing the document
-		document1.close();
-		document2.close();
-		fos.close();
 		
+		// Creating paragraph
+		document.add(new Paragraph("DHS Office Address : Office Address goes here", font));
+		document1.add(new Paragraph("DHS Office Address : Office Address goes here", font));
+		document.add(new Paragraph("Contact Number : Contact Number goes here", font));
+		document1.add(new Paragraph("Contact Number : Contact Number goes here", font));
+		document.add(new Paragraph("Website : Website Url goes here", font));
+		document1.add(new Paragraph("Website : Website Url goes here", font));
+
+		
+		// Closing the document
+		document.close();
+		document1.close();
+		fos.close();
 		pdfWriter.flush();
+		pdfWriter1.flush();
 		return baos.toByteArray();
 	}
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.rihs.binding.EligibilityDetailsResponse;
 
-@FeignClient("ELIGIBLITY-DETERMINATION-API")
+@FeignClient("ELIGIBILITY-DETERMINATION-API")
 public interface EligibilityDetailsConsumer {
 
 	@GetMapping("/v1/api/eligibility/get/{caseNum}")
