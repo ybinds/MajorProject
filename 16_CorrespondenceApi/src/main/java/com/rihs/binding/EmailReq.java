@@ -9,5 +9,6 @@ public class EmailReq {
 	private String emailFrom;
 	private String emailSubject;
 	private String emailText;
-	private byte[] fileContent;
+	//private byte[] fileContent;
+	private String fileName;
 }

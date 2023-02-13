@@ -1,6 +1,6 @@
-Hello {fullName},
-	This is to inform you that your application for {planName} has been {planStatus}. 
-	You can find further details in the attached document.
+Hello {fullName}, <br/>
+	This is to inform you that your application for {planName} has been {planStatus}.<br/> 
+	You can find further details in the attached document.<br/><br/>
 	
-Thank you,
+Thank you,<br/>
 RHIS

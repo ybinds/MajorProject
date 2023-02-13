@@ -77,7 +77,7 @@ public class CorrespondenceServiceImpl implements ICorrespondenceService {
 			req.setEmailTo(citizen.getCitizenEmail());
 			req.setEmailSubject("Application Status Notice for AppId: " + caseInfo.getAppId());
 			req.setEmailText(setEmailBody(ed));
-			req.setFileContent(pt.getTriggerPdf());
+			req.setFileName(ed.getHolderName() + "-" + ed.getCaseNum() + ".pdf");
 			try {
 				util.sendEmail(req);
 			} catch (Exception e) {
