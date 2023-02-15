@@ -1,0 +1,12 @@
+Hi ${FName}, <br />
+<br />
+Welcome to RHIS family, your registration is almost complete. <br />
+<br />
+Please unlock your account using below details.<br />
+<br />
+Temporary Password: ${Pwd}<br />
+<br />
+<a href='http://localhost:4200/unlock/${Email}'>Link to unlock account</a><br />
+<br />
+Thank you,<br />
+RHIS Team

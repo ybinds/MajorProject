@@ -68,7 +68,7 @@ public class CaseServiceImpl implements ICaseService {
 					Case savedCase = crepo.save(c); // create a fresh case
 					CasePlanResponse response = new CasePlanResponse();
 					response.setCaseNumber(savedCase.getCaseNumber());
-					List<Plan> plans = prepo.findAll();
+					List<Plan> plans = prepo.findByActive(true);
 					response.setPlan(plans);
 					return response;
 				} else {

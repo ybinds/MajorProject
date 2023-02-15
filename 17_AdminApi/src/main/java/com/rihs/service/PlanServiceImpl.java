@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.rihs.binding.PlanRequest;
 import com.rihs.entity.Plan;
 import com.rihs.exception.PlanNotFoundException;
+import com.rihs.repository.CategoryRepository;
 import com.rihs.repository.PlanRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +21,15 @@ public class PlanServiceImpl implements IPlanService{
 	@Autowired
 	private PlanRepository repo;
 	
+	@Autowired
+	private CategoryRepository cRepo;
+	
 	public String savePlan(PlanRequest request) {
 		log.info("Entering into savePlan method");
 		Plan plan = new Plan();
 		BeanUtils.copyProperties(request, plan);
 		plan.setActive(true);
+		plan.setCategory(cRepo.findById(request.getCid()).get());
 		Integer id = repo.save(plan).getId();
 		log.info("Exiting from savePlan method");
 		return "Plan with id: " + id + " saved successfully";
