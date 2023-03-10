@@ -129,7 +129,7 @@ public class CorrespondenceServiceImpl implements ICorrespondenceService {
 		pt.setTriggerStatus("Completed");
 		repo.save(pt); // finally after everything goes well save to db
 		successTriggers++;
-		log.info("Exiting from processTrigger method");
+		log.info("Exiting from processTrigger method here");
 	}
 	
 	// method to set the text for email
