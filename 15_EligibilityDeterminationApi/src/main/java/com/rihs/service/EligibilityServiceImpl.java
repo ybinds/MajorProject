@@ -2,7 +2,8 @@ package com.rihs.service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +128,22 @@ public class EligibilityServiceImpl implements IEligibilityService {
 		EligibilityDetails ed = repo.findByCaseNum(caseNum).orElseThrow(() -> new CaseNotFoundException("CASE WITH " + caseNum + " IS NOT FOUND"));
 		BeanUtils.copyProperties(ed, edResponse);
 		return edResponse;
+	}
+
+	@Override
+	public List<EligibilityDetailsResponse> getApprovedEligibilityDetails() {
+		log.info("Entering into getApprovedEligibilityDetails method");
+		
+		List<EligibilityDetails> details = repo.findByPlanStatusAndPlanEndDateAfter("Approved", LocalDate.now());
+		List<EligibilityDetailsResponse> list = new ArrayList<>();
+		details.forEach(
+					(d) -> {
+						EligibilityDetailsResponse edr = new EligibilityDetailsResponse();
+						BeanUtils.copyProperties(d, edr);
+						list.add(edr);
+					});
+		log.info("Exiting from getApprovedEligiblityDetails method");
+		return list;
 	}
 
 }

@@ -1,8 +1,0 @@
-package com.rihs.consumer;
-
-import org.springframework.cloud.openfeign.FeignClient;
-
-@FeignClient("CITIZENREGISTRATIONAPPLICATIONAPI")
-public class CitizenAppConsumerFeign {
-
-}

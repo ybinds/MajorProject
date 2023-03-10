@@ -1,6 +1,0 @@
-package com.rihs.service;
-
-public interface ICaseService {
-
-	Integer createCase(Long appId);
-}

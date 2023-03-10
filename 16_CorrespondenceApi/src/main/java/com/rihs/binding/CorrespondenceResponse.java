@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class CorrespondenceResponse {
 
-	private Integer totalTriggers;
-	private Integer successTriggers;
-	private Integer failedTriggers;
+	private Long totalTriggers;
+	private Long successTriggers;
+	private Long failedTriggers;
 }

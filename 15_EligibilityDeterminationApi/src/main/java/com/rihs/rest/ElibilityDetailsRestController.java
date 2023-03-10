@@ -1,5 +1,7 @@
 package com.rihs.rest;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,5 +43,11 @@ public class ElibilityDetailsRestController {
 			throw e;
 		}
 		return response;
+	}
+	
+	@GetMapping("/getApproved")
+	public ResponseEntity<List<EligibilityDetailsResponse>> getApprovedEligibilityDetails(){
+		List<EligibilityDetailsResponse> edr = service.getApprovedEligibilityDetails();
+		return ResponseEntity.ok(edr);
 	}
 }
